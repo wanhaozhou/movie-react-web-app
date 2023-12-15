@@ -34,7 +34,7 @@ const SignIn = () => {
 			.then((resp) => {
 				setError(null);
 				dispatch(setCurrentUser(resp.data));
-				navigate("/");
+				navigate("/profile");
 			})
 			.catch((e) => {
 				setError(e.response.data.error);

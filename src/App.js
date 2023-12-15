@@ -13,9 +13,11 @@ import ErrorPage from "./Screens/ErrorPage";
 import Footer from "./Components/Footer";
 import Admin from "./Screens/Admin";
 import Studio from "./Screens/Studio";
+import Original from "./Screens/Original";
+import Company from "./Screens/Company";
+import Staff from "./Screens/Staff";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import Original from "./Screens/Original";
 
 const App = () => {
 	return (
@@ -40,6 +42,8 @@ const App = () => {
 						<Route path="/admin" element={<Admin />} />
 						<Route path="/studio" element={<Studio />} />
 						<Route path="/original/:oid" element={<Original />} />
+						<Route path="/company/:cid" element={<Company />} />
+						<Route path="/staff/:sid" element={<Staff />} />
 						<Route path="/404" element={<ErrorPage />} />
 						<Route path="/" element={<Navigate to="/home" />} />
 						<Route path="*" element={<ErrorPage code="404" />} />

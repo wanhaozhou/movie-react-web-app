@@ -37,7 +37,7 @@ const Studio = () => {
 				setError(null);
 				navigate("/profile");
 			})
-			.catch((error) => setError(e.response.data.error));
+			.catch((error) => setError(error.response.data.error));
 	};
 
 	if (!currentUser || currentUser.role !== "CREATOR") {

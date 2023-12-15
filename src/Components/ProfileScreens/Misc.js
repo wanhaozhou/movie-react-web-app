@@ -45,8 +45,7 @@ const Misc = ({ uid }) => {
 	return (
 		<>
 			<div className="display-6 mb-4">Misc</div>
-			{/*	Created Contents*/}
-			{user && user.role === "CREATOR" && (
+			{user && user.role === "CREATOR" ? (
 				<>
 					<h3 style={{ fontWeight: 300 }}>Original</h3>
 					{originals.length === 0 && <NoRecord />}
@@ -93,9 +92,9 @@ const Misc = ({ uid }) => {
 						</Row>
 					)}
 				</>
+			) : (
+				<NoRecord />
 			)}
-
-			{/*	Other liked contents: companies, actiors etc.*/}
 		</>
 	);
 };

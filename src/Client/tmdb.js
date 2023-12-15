@@ -23,3 +23,13 @@ export const searchMovies = async (query, page = 1) => {
 	);
 	return data;
 };
+
+export const fetchStaff = async (id) => {
+	const { data } = await client.get(`/movie/${id}/credits`);
+	return data;
+};
+
+export const fetchCompany = async (id) => {
+	const { data } = await client.get(`/company/${id}`);
+	return data;
+};

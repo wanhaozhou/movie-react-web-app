@@ -1,10 +1,20 @@
-import { Container, Row, Badge, Modal, Form, Button } from "react-bootstrap";
+import {
+	Container,
+	Row,
+	Badge,
+	Modal,
+	Form,
+	Button,
+	Toast,
+	ToastContainer,
+} from "react-bootstrap";
 import { useParams, useNavigate } from "react-router";
 import React, { useEffect, useState } from "react";
 import { MdFavoriteBorder } from "react-icons/md";
 import { MdFavorite } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { GoPeople } from "react-icons/go";
 
 import StarVisualization from "../Components/StarVisualization";
 import MoviePosterPlaceholder from "../Components/MoviePosterPlaceholder";
@@ -16,10 +26,14 @@ import NoRecord from "../Components/NoRecord";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { Link } from "react-router-dom";
 
 const Details = () => {
 	const { did } = useParams();
 	const navigate = useNavigate();
+
+	const [showToast, setShowToast] = useState(false);
+	const [axiosError, setAxiosError] = useState(null);
 
 	const currentUser = useSelector((state) => state.context.currentUser);
 	const [favorite, setFavorite] = useState(
@@ -96,6 +110,8 @@ const Details = () => {
 				},
 			]);
 		} catch (error) {
+			setShowToast(true);
+			setAxiosError(error.response.data.error);
 			console.log(error);
 		} finally {
 			setReviewText("");
@@ -111,178 +127,249 @@ const Details = () => {
 	};
 
 	return (
-		<Container fluid className="mt-3">
+		<>
 			{
-				<Modal show={showModal} onHide={handleClose}>
-					<Modal.Header closeButton>
-						<Modal.Title>Write a Review</Modal.Title>
-					</Modal.Header>
-					<Modal.Body>
-						<Form onSubmit={(e) => handleSubmit(e)}>
-							<Form.Group>
-								<Form.Label className="mt-3">
-									Your Review
-								</Form.Label>
-								<Form.Control
-									as="textarea"
-									rows={6}
-									value={reviewText}
-									onChange={(e) =>
-										setReviewText(e.target.value)
-									}
-									required
-								/>
-							</Form.Group>
-							<Row className="mx-auto mt-4">
-								<Button variant="primary" type="submit">
-									Submit Review
-								</Button>
-							</Row>
-						</Form>
-					</Modal.Body>
-				</Modal>
+				<ToastContainer
+					className="p-3"
+					position={"top-end"}
+					style={{ zIndex: 1 }}
+				>
+					<Toast
+						onClose={() => {
+							setShowToast(false);
+							setAxiosError(null);
+						}}
+						show={showToast}
+						delay={2000}
+						autohide
+					>
+						<Toast.Header>
+							<strong className="me-auto text-danger">
+								Error
+							</strong>
+						</Toast.Header>
+						<Toast.Body>
+							<p>{axiosError}</p>
+						</Toast.Body>
+					</Toast>
+				</ToastContainer>
 			}
-			{movie && (
-				<>
-					<Row className="mt-5">
-						<div className="col-md-4 d-flex align-items-center justify-content-center">
-							{movie.poster_path ? (
-								<MovieCard
-									movie={{
-										id: did,
-										poster:
-											tmdbImageBaseUrl +
-											movie.poster_path,
-										width: "230px",
-									}}
-								/>
-							) : (
-								<MoviePosterPlaceholder />
-							)}
-						</div>
-						<div className="col-md-7">
-							<h3>
-								{movie.original_title}
-								{currentUser &&
-									(favorite ? (
-										<div
-											className="text-danger float-end"
-											onClick={handleRemoveFavorite}
-										>
-											<MdFavorite />
-										</div>
-									) : (
-										<div
-											className="text-danger float-end"
-											onClick={handleAddFavorite}
-										>
-											<MdFavoriteBorder />
-										</div>
-									))}
-							</h3>
 
-							<h5 className="mt-4">Genre</h5>
-							{movie.genres.length > 0 ? (
-								movie.genres.map((item, index) => (
+			<Container fluid className="mt-3">
+				{
+					<Modal show={showModal} onHide={handleClose}>
+						<Modal.Header closeButton>
+							<Modal.Title>Write a Review</Modal.Title>
+						</Modal.Header>
+						<Modal.Body>
+							<Form onSubmit={(e) => handleSubmit(e)}>
+								<Form.Group>
+									<Form.Label className="mt-3">
+										Your Review
+									</Form.Label>
+									<Form.Control
+										as="textarea"
+										rows={6}
+										value={reviewText}
+										onChange={(e) =>
+											setReviewText(e.target.value)
+										}
+										required
+									/>
+								</Form.Group>
+								<Row className="mx-auto mt-4">
+									<Button variant="primary" type="submit">
+										Submit Review
+									</Button>
+								</Row>
+							</Form>
+						</Modal.Body>
+					</Modal>
+				}
+				{movie && (
+					<>
+						<Row className="mt-5">
+							<div className="col-md-4 d-flex align-items-center justify-content-center">
+								{movie.poster_path ? (
+									<MovieCard
+										movie={{
+											id: did,
+											poster:
+												tmdbImageBaseUrl +
+												movie.poster_path,
+											width: "230px",
+										}}
+									/>
+								) : (
+									<MoviePosterPlaceholder />
+								)}
+							</div>
+							<div className="col-md-7">
+								<h4>
+									<a
+										href={`/staff/${movie.id}`}
+										style={{
+											textDecoration: "none",
+											color: "black",
+										}}
+									>
+										{movie.original_title}
+										<span className="ms-2">
+											<GoPeople />
+										</span>
+									</a>
+									{currentUser &&
+										(favorite ? (
+											<div
+												className="text-danger float-end"
+												onClick={handleRemoveFavorite}
+											>
+												<MdFavorite />
+											</div>
+										) : (
+											<div
+												className="text-danger float-end"
+												onClick={handleAddFavorite}
+											>
+												<MdFavoriteBorder />
+											</div>
+										))}
+								</h4>
+
+								<h5 className="mt-4">Genre</h5>
+								{movie.genres.length > 0 ? (
+									movie.genres.map((item, index) => (
+										<Badge
+											bg="primary"
+											className="me-2 px-2"
+											pill
+											key={index}
+										>
+											{item.name}
+										</Badge>
+									))
+								) : (
 									<Badge
-										bg="primary"
+										bg="warning"
 										className="me-2 px-2"
 										pill
-										key={index}
 									>
-										{item.name}
+										Unknown
 									</Badge>
-								))
-							) : (
-								<Badge bg="warning" className="me-2 px-2" pill>
-									Unknown
-								</Badge>
-							)}
-
-							<h5 className="mt-4">TMDB Rating</h5>
-							{movie.vote_average ? (
-								<StarVisualization score={movie.vote_average} />
-							) : (
-								<h5 style={{ fontWeight: 300 }}>N/A</h5>
-							)}
-
-							<h5 className="mt-4">Overview</h5>
-							<p>{movie.overview}</p>
-						</div>
-					</Row>
-					<Row className="mt-5">
-						<div className="offset-md-1 col-md-10">
-							<h3>
-								Reviews
-								{currentUser && (
-									<span className="float-end">
-										<FaRegEdit
-											onClick={() => setShowModal(true)}
-										/>
-									</span>
 								)}
-							</h3>
-							{reviews.length > 0 && (
-								<Row xs={1} className="ms-0 ps-0 mb-5 mt-3">
-									{reviews.map((review, idx) => (
-										<Col
-											key={idx}
-											className="ms-0 ps-0 mb-3"
-										>
-											<Card>
-												<Card.Body>
-													<Card.Title>
-														<div className="my-auto">
-															<span
-																style={{
-																	cursor: "pointer",
-																}}
-																onClick={() =>
-																	navigate(
-																		`/profile/${review.user.username}`,
-																	)
-																}
-															>
-																{
-																	review.user
-																		.username
-																}
-															</span>
-															{currentUser &&
-																currentUser.username ===
-																	review.user
-																		.username && (
-																	<span className="float-end">
-																		<RiDeleteBin5Line
-																			onClick={() =>
-																				handleDeleteReview(
-																					review._id,
-																				)
-																			}
-																		/>
-																	</span>
-																)}
-														</div>
-													</Card.Title>
-													<Card.Text>
-														{review.review}
-													</Card.Text>
-												</Card.Body>
-											</Card>
-										</Col>
-									))}
-								</Row>
-							)}
-							{reviews.length === 0 && (
-								<div className="mt-3">
-									<NoRecord />
-								</div>
-							)}
-						</div>
-					</Row>
-				</>
-			)}
-		</Container>
+
+								<h5 className="mt-4">TMDB Rating</h5>
+								{movie.vote_average ? (
+									<StarVisualization
+										score={movie.vote_average}
+										size={25}
+									/>
+								) : (
+									<h5 style={{ fontWeight: 300 }}>N/A</h5>
+								)}
+
+								{movie.production_companies &&
+									movie.production_companies.length > 0 && (
+										<>
+											<h5 className="mt-4">Company</h5>
+											<Link
+												to={`/company/${movie.production_companies[0].id}`}
+												style={{
+													textDecoration: "none",
+													color: "black",
+												}}
+											>
+												{
+													movie
+														.production_companies[0]
+														.name
+												}
+											</Link>
+										</>
+									)}
+
+								<h5 className="mt-4">Overview</h5>
+								<p>{movie.overview}</p>
+							</div>
+						</Row>
+						<Row className="mt-5">
+							<div className="offset-md-1 col-md-10">
+								<h4>
+									Reviews
+									{currentUser && (
+										<span className="float-end">
+											<FaRegEdit
+												onClick={() =>
+													setShowModal(true)
+												}
+											/>
+										</span>
+									)}
+								</h4>
+								{reviews.length > 0 && (
+									<Row xs={1} className="ms-0 ps-0 mb-5 mt-3">
+										{reviews.map((review, idx) => (
+											<Col
+												key={idx}
+												className="ms-0 ps-0 mb-3"
+											>
+												<Card>
+													<Card.Body>
+														<Card.Title>
+															<div className="my-auto">
+																<span
+																	style={{
+																		cursor: "pointer",
+																	}}
+																	onClick={() =>
+																		navigate(
+																			`/profile/${review.user.username}`,
+																		)
+																	}
+																>
+																	{
+																		review
+																			.user
+																			.username
+																	}
+																</span>
+																{currentUser &&
+																	currentUser.username ===
+																		review
+																			.user
+																			.username && (
+																		<span className="float-end">
+																			<RiDeleteBin5Line
+																				onClick={() =>
+																					handleDeleteReview(
+																						review._id,
+																					)
+																				}
+																			/>
+																		</span>
+																	)}
+															</div>
+														</Card.Title>
+														<Card.Text>
+															{review.review}
+														</Card.Text>
+													</Card.Body>
+												</Card>
+											</Col>
+										))}
+									</Row>
+								)}
+								{reviews.length === 0 && (
+									<div className="mt-3">
+										<NoRecord />
+									</div>
+								)}
+							</div>
+						</Row>
+					</>
+				)}
+			</Container>
+		</>
 	);
 };
 
