@@ -10,12 +10,14 @@ import { avatarStyle, avatarName } from "../constants";
 const Followers = ({ uid }) => {
 	const navigate = useNavigate();
 	const [follower, setFollower] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		followClient
 			.findFollowersByUsername(uid)
 			.then((resp) => {
 				setFollower(resp.data.map((item) => item.out_));
+				setLoading(false);
 			})
 			.catch((e) => console.log(e));
 	}, [uid, navigate]);
@@ -24,7 +26,7 @@ const Followers = ({ uid }) => {
 		<>
 			<div className="display-6 mb-5">Followers</div>
 			<Row sm={2} md={3} lg={4} className="g-4 ms-0 ps-0 mb-5">
-				{follower.length === 0 && <NoRecord />}
+				{!loading && follower.length === 0 && <NoRecord />}
 				{follower.length > 0 &&
 					follower.map((user, idx) => (
 						<Col key={idx} className="ms-0 ps-0">

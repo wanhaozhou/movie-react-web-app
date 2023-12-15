@@ -14,6 +14,7 @@ const Misc = ({ uid }) => {
 	const currentUser = useSelector((state) => state.context.currentUser);
 	const [originals, setOriginals] = useState([]);
 	const [user, setUser] = useState(null);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -26,6 +27,7 @@ const Misc = ({ uid }) => {
 					);
 					setOriginals(resp2.data);
 				}
+				setLoading(false);
 			} catch (error) {
 				console.log(error);
 			}
@@ -48,7 +50,7 @@ const Misc = ({ uid }) => {
 			{user && user.role === "CREATOR" ? (
 				<>
 					<h3 style={{ fontWeight: 300 }}>Original</h3>
-					{originals.length === 0 && <NoRecord />}
+					{!loading && originals.length === 0 && <NoRecord />}
 					{originals.length > 0 && (
 						<Row xs={1} className="g-4 ms-0 ps-0 mb-5 mt-1">
 							{originals.map((original, idx) => (
@@ -93,7 +95,7 @@ const Misc = ({ uid }) => {
 					)}
 				</>
 			) : (
-				<NoRecord />
+				!loading && <NoRecord />
 			)}
 		</>
 	);

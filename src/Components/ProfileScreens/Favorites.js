@@ -14,11 +14,15 @@ const Favorites = ({ uid }) => {
 	const currentUser = useSelector((state) => state.context.currentUser);
 
 	const [movies, setMovies] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		favoriteMovieClient
 			.fetchFavorite(uid)
-			.then((resp) => setMovies(resp.data))
+			.then((resp) => {
+				setMovies(resp.data);
+				setLoading(false);
+			})
 			.catch((err) => console.log(err));
 	}, [uid]);
 
@@ -35,7 +39,7 @@ const Favorites = ({ uid }) => {
 	return (
 		<>
 			<div className="display-6 mb-5">Favorite Movies</div>
-			{movies.length <= 0 && <NoRecord />}
+			{!loading && movies.length <= 0 && <NoRecord />}
 			{movies.length > 0 && (
 				<Row xs={1} md={3} xl={4} className="g-4 ms-0 ps-0 mb-5">
 					{movies.map((m, idx) => (

@@ -12,12 +12,14 @@ const Follows = ({ uid }) => {
 	const navigate = useNavigate();
 	const [follow, setFollow] = useState([]);
 	const currentUser = useSelector((state) => state.context.currentUser);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		followClient
 			.findFollowingByUsername(uid)
 			.then((resp) => {
 				setFollow(resp.data.map((item) => item.in_));
+				setLoading(false);
 			})
 			.catch((e) => console.log(e));
 	}, [uid, navigate]);
@@ -35,7 +37,7 @@ const Follows = ({ uid }) => {
 		<>
 			<div className="display-6 mb-5">Following</div>
 			<Row sm={1} md={2} lg={3} className="g-4 ms-0 ps-0 mb-5">
-				{follow.length === 0 && <NoRecord />}
+				{!loading && follow.length === 0 && <NoRecord />}
 				{follow.length > 0 &&
 					follow.map((user, idx) => (
 						<Col key={idx} className="ms-0 ps-0">

@@ -11,13 +11,17 @@ import NoRecord from "../NoRecord";
 
 const Reviews = ({ uid }) => {
 	const [reviews, setReviews] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	const currentUser = useSelector((state) => state.context.currentUser);
 
 	useEffect(() => {
 		movieReviewClient
 			.fetchReviewsByUser(uid)
-			.then((resp) => setReviews(resp.data))
+			.then((resp) => {
+				setReviews(resp.data);
+				setLoading(false);
+			})
 			.catch((e) => console.log(e));
 	}, [uid]);
 
@@ -33,7 +37,7 @@ const Reviews = ({ uid }) => {
 	return (
 		<>
 			<div className="display-6 mb-5">Reviews</div>
-			{reviews.length === 0 && <NoRecord />}
+			{!loading && reviews.length === 0 && <NoRecord />}
 			{reviews.length > 0 && (
 				<Row xs={1} className="g-4 ms-0 ps-0 mb-5">
 					{reviews.map((review, idx) => (
