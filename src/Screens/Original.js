@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import * as originalClient from "../Client/original";
 import ErrorPage from "./ErrorPage";
-import { IoBookmarksOutline, IoBookmarks } from "react-icons/io5";
 import Avatar from "@mui/material/Avatar";
 import { avatarName, avatarStyle } from "../Components/constants";
 import { Stack } from "react-bootstrap";
@@ -44,15 +43,7 @@ const Original = () => {
 						</div>
 					</div>
 					<div className="col mt-5">
-						<h3>
-							{original.title}
-							{
-								<div className="text-dark float-end">
-									<IoBookmarksOutline />
-									<IoBookmarks />
-								</div>
-							}
-						</h3>
+						<h3>{original.title}</h3>
 
 						<h5 className="mt-4">Creator</h5>
 						<Stack direction="horizontal" gap={3}>
